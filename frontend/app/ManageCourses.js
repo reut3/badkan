@@ -291,8 +291,10 @@ $('body').on('click', '#edit', function (e) {
     let course = coursesMap.get(courseId);
     var newName = prompt("New name here:", course.name);
     var newIds = prompt("New ids here:", course.ids);
-    course.name = newName;
-    course.ids = newIds;
+    if(newName)
+        course.name = newName;
+    if(newIds)
+        course.ids = newIds;
     editCourse(course, courseId)
     document.location.href = "manageCourses.html";
 
