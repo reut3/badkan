@@ -135,7 +135,7 @@ document.getElementById("btnEdit").addEventListener('click', e => {
         if (pdf) {
             exercise.example = "PDF"
         }
-        uploadExercise(name, descr, minTest ,signatures);
+        uploadPeerExercise(name, descr, minTest ,signatures);
         editPdf(pdf);
     }
 });
@@ -171,13 +171,13 @@ function editPdf(file) {
 }
 
 
-function uploadExercise(name, descr, minTest ,signatures) {
+function uploadPeerExercise(name, descr, minTest ,signatures) {
     // The ref of the folder must be PK.
     var user = firebase.auth().currentUser;
     let ex= new PeerExercise(name, descr, exercise.ownerId, exercise.peerGrades, exercise.deadlineTest,
         exercise.deadlineSolution, exercise.deadlineConflicts, exercise.compilerSolution, exercise.compilerTest, exercise.submission, minTest, signatures)
     incrementEditExWithoutCommingHome(user.uid, homeUser);
-    writeExercise(ex, exerciseId);
+    writePeerExercise(ex, exerciseId);
 }
 
 
