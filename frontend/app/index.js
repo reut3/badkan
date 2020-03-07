@@ -12,51 +12,51 @@ $('a[href="#githubSubmission"]').click(function () {
     Swal.fire({
         title: 'Efficient use of GitHub',
         text: "Badkan allows users to submit both entire programming projects (through github)" +
-            " and than just single files. The instructor can choose the submission way."
+            " and just single files. The instructor can choose the submission way."
     });
 });
 
 $('a[href="#grade"]').click(function () {
     Swal.fire({
         title: 'Automatic grade',
-        text: "To get the grade, the system run the code provided by the student with" +
+        text: "To get the grade, the system runs the code provided by the student with" +
             " a specific input and compare the output of the student with the expectation" +
-            " the instructor provide for the output. If the expectation correspond to the output" +
-            " of the student's code, then some point will be give to the student."
+            " the instructor provides for the output. If the expectation correspond to the output" +
+            " of the student's code, then the student’s mark will improve."
     });
 });
 
 $('a[href="#instructor"]').click(function () {
     Swal.fire({
-        title: 'Save instructor time',
-        text: "Badkan provide an easy graphical interface ot let the instructor customize the input/output system."
+        title: "Save instructor's time",
+        text: "Badkan provides an easy graphical interface that lets the instructor customize the input/output system."
     });
 });
 
 $('a[href="#peer"]').click(function () {
     Swal.fire({
         title: 'Peer grading',
-        text: "Another interesting way to grade student is by using peer to peer grading: on" +
-            "this process, students grade them-self. Indeed, the first part" +
-            "of the process is to let student implement test-cases for the given exercise." +
+        text: "Another interesting way to grade student is to use peer to peer grading: in" +
+            "this process, students grade them-selves. The first part" +
+            "is to let the student implement test-cases for the given exercise." +
             "Then, the second part is to let them submit their answer for the exercise." +
-            "At this point, the platform is able to grade the test-cases submission and" +
-            "also the solution of the exercise."
+            "At this point, the platform is able to grade both the test-cases and" +
+            "the answer."
     });
 });
 
 $('a[href="#realtime"]').click(function () {
     Swal.fire({
         title: 'Real time grading',
-        text: "The grade is displayed to the student's screen in real time. " +
-            "That is, at every submission, the student will be inform of his grade."
+        text: "The student’s screen displays the grade in real time." +
+            "At each submission, the student will be informed about his grade."
     });
 });
 
 $('a[href="#other"]').click(function () {
     Swal.fire({
         title: 'More features',
-        text: "The instructor is able to upload a pdf, to check plagarism, to download all the grades, " +
+        text: "The instructor is able to upload a pdf, to check fraud, to download all the grades, " +
             "to run or download a specific project or all the projects..."
     });
 });
@@ -73,17 +73,21 @@ $("#btnSignUp").click(function () {
     const name = escapeHtml($("#txtName").val())
     const lastName = escapeHtml($("#txtLastName").val())
     const id = escapeHtml($("#txtId").val())
-    if (checkEmptyFields([email, pass, name, lastName, id])) {
+    if (checkEmptyFieldsSnackbar([email, pass, name, lastName, id])) {
         let json = JSON.stringify({
             email: email,
             pass: pass,
             name: name,
             lastName: lastName,
             id: id,
-            checked: False
+            checked: false
         });
-        let onSuccess = () => { signIn(email, pass) }
-        doPostJSON(json, "create_auth", "text", (data) => { onMessageCreateAuth(data, onSuccess) })
+        let onSuccess = () => {
+            signIn(email, pass, true)
+        }
+        doPostJSON(json, "create_auth", "text", (data) => {
+            onMessageCreateAuth(data, onSuccess)
+        })
     }
 });
 
@@ -111,9 +115,11 @@ $("#github").click(function () {
                     target: "create_auth_github",
                     uid: result.user.uid,
                     country_id: prom[0],
-                    checked: False
+                    checked: false
                 });
-                doPostJSON(json, "create_auth_github", "text", (data) => { onMessageCreateAuth(data, signInSuccess) })
+                doPostJSON(json, "create_auth_github", "text", (data) => {
+                    onMessageCreateAuth(data, signInSuccessNewUser)
+                })
             });
         } else {
             signInSuccess();
@@ -144,12 +150,20 @@ function onMessageCreateAuth(data, onSuccess) {
     }
 }
 
-function signIn(email, pass) {
+function signIn(email, pass, newUser = false) {
     firebase.auth().signInWithEmailAndPassword(email, pass).then(function () {
-        signInSuccess();
+        if (newUser) {
+            signInSuccessNewUser()
+        } else {
+            signInSuccess();
+        }
     }).catch(error => {
         showSnackbar(error.message);
     })
+}
+
+function signInSuccessNewUser() {
+    document.location.href = "home.html#tutorial"
 }
 
 function signInSuccess() {
@@ -160,6 +174,7 @@ async function additionalInformation() {
     const {
         value: formValues
     } = await Swal.fire({
+        allowOutsideClick: false,
         title: 'Additional information',
         html: '<label for="user_country_id">Id</label>' +
             '<input id="user_country_id" class="swal2-input">',

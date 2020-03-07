@@ -90,15 +90,6 @@ function instructorPrivilege(checked) {
     }
 }
 
-function displayNoneById(id) {
-    document.getElementById(id).style.display = "none";
-}
-
-
-function displayBlockById(id) {
-    document.getElementById(id).style.display = "block";
-}
-
 function showSnackbar(message) {
     $('#snackbar').html(message);
     myClass = $('#snackbar')[0]
@@ -115,12 +106,21 @@ function showSnackbar(message) {
  * @param {String} lastName 
  * @param {Stirng} id 
  */
-function checkEmptyFields(args) {
-    console.log(JSON.stringify(args))
-    var emptyField = document.getElementById("emptyField");
+function checkEmptyFieldsSnackbar(args) {
     if (args.includes(undefined) || args.includes("")) {
-        emptyField.className = "show";
-        setTimeout(function () { emptyField.className = emptyField.className.replace("show", ""); }, 2500);
+        showSnackbar("Please fill all the fields.")
+        return false;
+    }
+    return true;
+}
+
+function checkEmptyFieldsAlert(args) {
+    if (args.includes(undefined) || args.includes("")) {
+        Swal.fire(
+            'An error occured!',
+            'Please fill all the fields.',
+            'error'
+        )
         return false;
     }
     return true;
@@ -131,6 +131,9 @@ function checkEmptyFields(args) {
  * @param {String} unsafe 
  */
 function escapeHtml(unsafe) {
+    if (!unsafe) {
+        return ''
+    }
     return unsafe
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
@@ -149,4 +152,32 @@ function escapeHtmlWithRespectGit(unsafe) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
+}
+
+function showLoader() {
+    $('#main').hide();
+    $('#loader').show();
+}
+
+function hideLoader() {
+    $('#loader').hide();
+    $('#main').show();
+}
+
+function downloadGuide() {
+    doPostJSON("", "download_guide", "text", onFinishDownloadMarketing)
+}
+
+function downloadPricePlan() {
+    doPostJSON("", "download_price_plan", "text", onFinishDownloadMarketing)
+}
+
+function onFinishDownloadMarketing(data) {
+    window.open(data)
+}
+
+function deleteBlank(array) {
+    return array.filter(function (el) {
+        return el != "";
+    });
 }
